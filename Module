@@ -1,0 +1,41 @@
+#include <iostream>
+
+class Library {
+private:
+    static Library* instance;
+    
+    // Приватний конструктор, щоб заборонити створення екземплярів поза класом
+    Library() {}
+
+public:
+    // Метод для отримання єдиного екземпляру бібліотеки
+    static Library* getInstance() {
+        if (!instance) {
+            instance = new Library();
+        }
+        return instance;
+    }
+    
+    // Методи бібліотеки
+    void borrowBook(const std::string& book) {
+        std::cout << "Book '" << book << "' borrowed." << std::endl;
+    }
+    
+    void returnBook(const std::string& book) {
+        std::cout << "Book '" << book << "' returned." << std::endl;
+    }
+};
+
+// Ініціалізація статичної змінної класу
+Library* Library::instance = nullptr;
+
+int main() {
+    // Отримання єдиного екземпляру бібліотеки
+    Library* library = Library::getInstance();
+
+    // Використання методів бібліотеки
+    library->borrowBook("The Great Gatsby");
+    library->returnBook("The Great Gatsby");
+
+    return 0;
+}
