@@ -1,0 +1,54 @@
+#include <iostream>
+#include <string>
+
+// Абстракція, яка працює з імплементацією
+class Library {
+protected:
+    class LibraryImpl {
+    public:
+        virtual void operation(const std::string& book) = 0;
+        virtual ~LibraryImpl() {}
+    };
+
+    LibraryImpl* impl;
+
+public:
+    Library(LibraryImpl* impl) : impl(impl) {}
+
+    virtual void request(const std::string& book) {
+        impl->operation(book);
+    }
+
+    virtual ~Library() {}
+};
+
+// Конкретна абстракція
+class NewLibrary : public Library {
+public:
+    NewLibrary(LibraryImpl* impl) : Library(impl) {}
+
+    void request(const std::string& book) override {
+        std::cout << "New library is processing request for book: " << book << std::endl;
+        Library::request(book);
+    }
+};
+
+// Імплементація, яка реалізує певний спосіб виконання операцій
+class OldLibraryImpl : public Library::LibraryImpl {
+public:
+    void operation(const std::string& book) override {
+        std::cout << "Old library is processing request for book: " << book << std::endl;
+    }
+};
+
+int main() {
+    // Створюємо об'єкт конкретної абстракції та передаємо імплементацію
+    Library* library = new NewLibrary(new OldLibraryImpl());
+
+    // Викликаємо метод абстракції, який через міст викликає імплементацію
+    library->request("The Adventures of Sherlock Holmes");
+
+    delete library;
+
+    return 0;
+}
