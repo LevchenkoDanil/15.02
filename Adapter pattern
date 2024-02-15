@@ -1,0 +1,54 @@
+#include <iostream>
+#include <string>
+
+// Інтерфейс, який потрібно адаптувати
+class OldLibraryInterface {
+public:
+    virtual void request(const std::string& book) const = 0;
+};
+
+// Клас, який реалізує старий інтерфейс
+class OldLibrary : public OldLibraryInterface {
+public:
+    void request(const std::string& book) const override {
+        std::cout << "Old library is processing request for book: " << book << std::endl;
+    }
+};
+
+// Новий інтерфейс, до якого потрібно адаптувати старий інтерфейс
+class NewLibraryInterface {
+public:
+    virtual void borrow(const std::string& book) const = 0;
+};
+
+// Адаптер, який перетворює старий інтерфейс на новий
+class LibraryAdapter : public NewLibraryInterface {
+private:
+    OldLibraryInterface* oldLibrary;
+
+public:
+    LibraryAdapter(OldLibraryInterface* oldLib) : oldLibrary(oldLib) {}
+
+    void borrow(const std::string& book) const override {
+        // Викликаємо старий метод через адаптер
+        oldLibrary->request(book);
+    }
+};
+
+// Клієнтський код, який використовує новий інтерфейс
+void clientCode(const NewLibraryInterface& library) {
+    library.borrow("The Adventures of Tom Sawyer");
+}
+
+int main() {
+    // Створюємо об'єкт старої бібліотеки
+    OldLibrary oldLib;
+
+    // Створюємо адаптер і передаємо йому об'єкт старої бібліотеки
+    LibraryAdapter adapter(&oldLib);
+
+    // Клієнтський код використовує новий інтерфейс через адаптер
+    clientCode(adapter);
+
+    return 0;
+}
